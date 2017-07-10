@@ -16,7 +16,7 @@ import com.cgu.d3.domain.Dependecy;
 @Service
 public class DependencyService {
 	
-	private static final String COMPONENT_PREFIX = "Component";
+	private static final String COMPONENT_PREFIX = "component";
 
 	private static final int MAX_DEPENDENCIES = 5;
 
