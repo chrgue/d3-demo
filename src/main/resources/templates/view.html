@@ -90,6 +90,9 @@ text {
 				.enter()
 				.append("circle")
 				.attr("r", circleRadius)
+				.on("click", function(e) {
+					window.open('/'+e.name);
+				})
 				.call(force.drag);
 		
 			var text = svg.append("g").selectAll("text")
