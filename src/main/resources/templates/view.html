@@ -10,18 +10,6 @@
 	stroke-width: 1.5px;
 }
 
-#licensing {
-	fill: green;
-}
-
-.link.licensing {
-	stroke: green;
-}
-
-.link.resolved {
-	stroke-dasharray: 0, 2 1;
-}
-
 circle {
 	fill: #ccc;
 	stroke: #333;
@@ -40,6 +28,9 @@ text {
 	<script th:inline="javascript">
 			var links = /*[[${dependencies}]]*/;
 			
+			var circleRadius = 10;
+			var width = 1024;
+			var height = 768;
 			
 			var nodes = {};
 		
@@ -52,16 +43,13 @@ text {
 					name : link.target
 				});
 			});
-		
-			var width = 1024,
-				height = 768;
-		
+			
 			var force = d3.layout.force()
 				.nodes(d3.values(nodes))
 				.links(links)
 				.size([ width, height ])
-				.linkDistance(60)
-				.charge(-300)
+				.linkDistance(128)
+				.charge(-height)
 				.on("tick", tick)
 				.start();
 		
@@ -71,14 +59,15 @@ text {
 		
 			// Per-type markers, as they don't inherit styles.
 			svg.append("defs").selectAll("marker")
-				.data([ "suit", "licensing", "resolved" ])
-				.enter().append("marker")
+				.data(["suit"])
+				.enter()
+				.append("marker")
 				.attr("id", function(d) {
 					return d;
 				})
 				.attr("viewBox", "0 -5 10 10")
-				.attr("refX", 15)
-				.attr("refY", -1.5)
+				.attr("refX", 20)
+				.attr("refY", -1)
 				.attr("markerWidth", 6)
 				.attr("markerHeight", 6)
 				.attr("orient", "auto")
@@ -87,7 +76,8 @@ text {
 		
 			var path = svg.append("g").selectAll("path")
 				.data(force.links())
-				.enter().append("path")
+				.enter()
+				.append("path")
 				.attr("class", function(d) {
 					return "link " + d.type;
 				})
@@ -97,15 +87,18 @@ text {
 		
 			var circle = svg.append("g").selectAll("circle")
 				.data(force.nodes())
-				.enter().append("circle")
-				.attr("r", 6)
+				.enter()
+				.append("circle")
+				.attr("r", circleRadius)
 				.call(force.drag);
 		
 			var text = svg.append("g").selectAll("text")
 				.data(force.nodes())
-				.enter().append("text")
+				.enter()
+				.append("text")
 				.attr("x", 8)
 				.attr("y", ".31em")
+				.style("font-weight", "bold")
 				.text(function(d) {
 					return d.name;
 				});
