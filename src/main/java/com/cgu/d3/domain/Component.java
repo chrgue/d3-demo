@@ -3,11 +3,12 @@ package com.cgu.d3.domain;
 import java.util.List;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Singular;
+import lombok.Value;
+
 
 @Builder
-@Data
+@Value
 public class Component {
 	String id;
 	

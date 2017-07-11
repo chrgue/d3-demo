@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.cgu.d3.domain.Component;
 import com.cgu.d3.domain.Component.ComponentBuilder;
-import com.cgu.d3.domain.Dependecy;
+import com.cgu.d3.domain.Dependency;
 
 
 @Service
@@ -24,22 +24,22 @@ public class DependencyService {
 	
 	private Map<String,Component> fakeRepository;
 	
-	public List<Dependecy> getAll(){
+	public List<Dependency> getAll(){
 		return fakeRepository.values().stream()
 			.map(this::generateComponentDependencies)
 			.flatMap(l -> l.stream())
 			.collect(Collectors.toList());
 	}
 	
-	public List<Dependecy> getByName(String name){
+	public List<Dependency> getByName(String name){
 		Component component = fakeRepository.get(name);
 		return generateComponentDependencies(component);
 	}
 
-	private List<Dependecy> generateComponentDependencies(Component component) {
+	private List<Dependency> generateComponentDependencies(Component component) {
 		return component.getDependsOn().stream()
 			.map(dep -> {
-				Dependecy dependecy = Dependecy.builder()
+				Dependency dependecy = Dependency.builder()
 				.source(component.getId())
 				.target(dep)
 				.type("suit")

@@ -1,11 +1,11 @@
 package com.cgu.d3.domain;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 @Builder
-@Data
-public class Dependecy {
+@Value
+public class Dependency {
 	String source;
 	String target;
 	String type;

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cgu.d3.domain.Dependecy;
+import com.cgu.d3.domain.Dependency;
 import com.cgu.d3.service.DependencyService;
 
 @Controller
@@ -23,17 +23,17 @@ public class D3Controller {
 		if(refresh){
 			service.generate();
 		}
-		List<Dependecy> dependencies = service.getAll();
+		List<Dependency> dependencies = service.getAll();
 		return createCommon(dependencies);
 	}
 	
 	@GetMapping("/{componentId}")
 	public ModelAndView getByComponentId(@PathVariable String componentId){
-		List<Dependecy> dependencies = service.getByName(componentId);
+		List<Dependency> dependencies = service.getByName(componentId);
 		return createCommon(dependencies);
 	}
 	
-	private ModelAndView createCommon(List<Dependecy> dependencies){
+	private ModelAndView createCommon(List<Dependency> dependencies){
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("view");
 		modelAndView.addObject("dependencies", dependencies);
