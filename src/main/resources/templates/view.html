@@ -15,6 +15,9 @@ circle {
 	stroke: #333;
 	stroke-width: 1.5px;
 }
+circle:hover {
+	fill: red
+}
 
 text {
 	font: 10px sans-serif;
@@ -27,16 +30,34 @@ text {
 <body>
 	<script src="https://d3js.org/d3.v3.min.js"></script>
 	<script th:inline="javascript">
-			var links = /*[[${dependencies}]]*/;
+			var components = /*[[${dependencies}]]*/;
 			
 			var circleRadius = 10;
 			var width = 1024;
 			var height = 768;
 			
+			var links = [];
+			components.forEach(function(c){
+				var service = c.service;
+				if(service){
+					var depends = service.dependsOn;
+					if(depends){
+						depends.internal.forEach(function(dep){
+							links.push({
+								"source": c.id,
+								"target": dep,
+								"type": "suit"
+							});
+						});	
+					}	
+				}
+			});
+			
 			var nodes = {};
 		
 			// Compute the distinct nodes from the links.
 			links.forEach(function(link) {
+				
 				link.source = nodes[link.source] || (nodes[link.source] = {
 					name : link.source
 				});

@@ -1,0 +1,13 @@
+id: component3
+type: service
+owner: 
+  - Team A
+
+links:
+  documentation: https://google.de
+  on_duty: https://google.de
+service:
+    depends_on:
+        internal:
+          - component1
+          - component4

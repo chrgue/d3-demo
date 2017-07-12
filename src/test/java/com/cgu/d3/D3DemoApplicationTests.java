@@ -11,28 +11,19 @@ import com.jayway.restassured.RestAssured;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class D3DemoApplicationTests {
-	
+
 	@LocalServerPort
-    int port;
-	
+	int port;
+
 	@Test
 	public void response200OnRoot() {
-		RestAssured.given()
-			.port(port)
-			.basePath("/")
-			.get("")
-			.then()
-			.statusCode(200);
-	}
 	
-	@Test
-	public void response200ForSingleComponent() {
-		RestAssured.given()
-			.port(port)
-			.basePath("/")
-			.get("component1")
-			.then()
-			.statusCode(200);
+		RestAssured.given().port(port).basePath("/").get("").then().statusCode(200);
 	}
 
+	@Test
+	public void response200ForSingleComponent() {
+	
+		RestAssured.given().port(port).basePath("/").get("component1").then().statusCode(200);
+	}
 }

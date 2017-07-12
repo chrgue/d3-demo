@@ -1,0 +1,8 @@
+id: component4
+type: service
+owner: 
+  - Team C
+
+links:
+  documentation: https://google.de
+  on_duty: https://google.de

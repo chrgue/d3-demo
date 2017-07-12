@@ -1,72 +1,73 @@
 package com.cgu.d3.service;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.cgu.d3.domain.Component;
-import com.cgu.d3.domain.Component.ComponentBuilder;
-import com.cgu.d3.domain.Dependency;
+import com.cgu.d3.domain.Index;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 
 @Service
 public class DependencyService {
 	
-	private static final String COMPONENT_PREFIX = "component";
-
-	private static final int MAX_DEPENDENCIES = 5;
-
-	private static final int DEFAULT_COMPONENT_COUNT = 20;
+	@Autowired
+	private RestTemplate restTemplate;
 	
-	private Map<String,Component> fakeRepository;
+	@Value("${metadata.url.index}")
+	private String indexUrl;
 	
-	public List<Dependency> getAll(){
-		return fakeRepository.values().stream()
-			.map(this::generateComponentDependencies)
-			.flatMap(l -> l.stream())
-			.collect(Collectors.toList());
+	@Value("${metadata.url.meta}")
+	private String metaUrl;
+	
+	@Value("${metadata.host}")
+	private String host;
+	
+	@Value("${metadata.port}")
+	private int port;
+	
+	private static ObjectMapper YAML_MAPPER = new ObjectMapper(new YAMLFactory());
+	
+	private String getUrlPrefix() {
+		return "http://" + host + ":" + port;
 	}
 	
-	public List<Dependency> getByName(String name){
-		Component component = fakeRepository.get(name);
-		return generateComponentDependencies(component);
+	public List<Component> getAllComponents(){
+		ResponseEntity<Index> forEntity = restTemplate.getForEntity(getUrlPrefix() + indexUrl, Index.class);
+		Index body = forEntity.getBody();
+		
+		return body.getPaths().stream()
+				.map(this::getComponentById)
+				.collect(Collectors.toList());
+		
 	}
 
-	private List<Dependency> generateComponentDependencies(Component component) {
-		return component.getDependsOn().stream()
-			.map(dep -> {
-				Dependency dependecy = Dependency.builder()
-				.source(component.getId())
-				.target(dep)
-				.type("suit")
-				.build();
-				return dependecy;
-				
-			}).collect(Collectors.toList());
-	}
+	public Component getComponentById(String id) {
+		ResponseEntity<String> meta = restTemplate.getForEntity(getUrlPrefix() + metaUrl + id, String.class);
 
-	public void generate() {
-		generate(DEFAULT_COMPONENT_COUNT);
-	}
-	
-	public void generate(int count){
-		fakeRepository = IntStream.range(1, count)
-				.boxed()
-				.map(value -> {
-					ComponentBuilder builder = Component.builder()
-							.id(COMPONENT_PREFIX + value);
-					
-					// create some dependencies
-					IntStream.range(1,Math.toIntExact(Math.round(Math.random() * MAX_DEPENDENCIES)))
-						.forEach(a -> {
-							builder.addDependency(COMPONENT_PREFIX + Math.round(Math.random() * count));
-						});
-					
-					return builder.build();
-				}).collect(Collectors.toMap(Component::getId, Function.identity()));
+		try {
+			Component component = YAML_MAPPER.readValue(meta.getBody(), Component.class);
+			return component;
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

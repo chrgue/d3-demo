@@ -1,0 +1,19 @@
+id: component1
+type: service
+owner: 
+  - Team A
+  - Team B
+  - Team C
+  - Team D
+  - Team E
+  - Team F
+  - Team G
+
+links:
+  documentation: https://google.de
+  on_duty: https://google.de
+service:
+    depends_on:
+        internal:
+          - component2
+          - component3
